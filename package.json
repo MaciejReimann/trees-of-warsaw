@@ -19,6 +19,8 @@
     "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "gatsby-plugin-sass": "^2.2.4",
+    "node-sass": "^4.14.0",
     "prettier": "2.0.4"
   },
   "repository": {
