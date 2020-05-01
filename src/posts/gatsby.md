@@ -7,6 +7,6 @@ I just launched a bootcamp!
 
 ## Topics covered
 
-1.Gatsby
-2.GraphQL
+1.Gatsby\
+2.GraphQL\
 3.React
