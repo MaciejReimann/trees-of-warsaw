@@ -1,6 +1,6 @@
 ---
-title: "The great Gatsby bootcamp"
-data: "2019-04-01"
+title: "The great React bootcamp"
+date: "2019-04-01"
 ---
 
 In this post you'll learn React.
