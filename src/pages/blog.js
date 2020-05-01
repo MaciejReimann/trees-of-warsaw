@@ -1,5 +1,5 @@
 import React from "react"
-import { graphql, useStaticQuery } from "gatsby"
+import { Link, graphql, useStaticQuery } from "gatsby"
 
 import Footer from "../components/footer"
 
@@ -12,6 +12,9 @@ const BlogPage = () => {
             frontmatter {
               title
               date
+            }
+            fields {
+              slug
             }
             html
             excerpt
@@ -30,8 +33,10 @@ const BlogPage = () => {
         {nodes.map((node, i) => {
           return (
             <li key={i}>
-              <h2>{node.frontmatter.title}</h2>
-              <p>{node.frontmatter.date}</p>
+              <Link to={`/blog/${node.fields.slug}`}>
+                <h2>{node.frontmatter.title}</h2>
+                <p>{node.frontmatter.date}</p>
+              </Link>
             </li>
           )
         })}
