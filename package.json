@@ -5,15 +5,16 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build",
-    "develop": "env-cmd -f .env.development gatsby develop",
-    "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
-    "start": "npm run develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "develop": "gatsby develop",
+    "start": "run-p start:**",
+    "start:app": "npm run develop",
+    "start:lambda": "netlify-lambda serve src/functions",
+    "build": "gatsby build && netlify-lambda build src/functions",
+    "build:app": "gatsby build",
+    "build:lambda": "netlify-lambda build src/functions"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "gatsby": "^2.20.35",
     "gatsby-source-filesystem": "^2.3.0",
     "gatsby-transformer-remark": "^2.8.4",
@@ -23,7 +24,10 @@
   "devDependencies": {
     "env-cmd": "^10.1.0",
     "gatsby-plugin-sass": "^2.2.4",
+    "http-proxy-middleware": "^1.0.3",
+    "netlify-lambda": "^1.6.3",
     "node-sass": "^4.14.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "2.0.4"
   },
   "repository": {
