@@ -23,15 +23,15 @@ module.exports = {
     },
     "gatsby-transformer-remark",
   ],
-  developMiddleware: app => {
-    app.use(
-      "/.netlify/functions/",
-      createProxyMiddleware({
-        target: "http://localhost:9000",
-        pathRewrite: {
-          "/.netlify/functions/": "",
-        },
-      })
-    )
-  },
+  // developMiddleware: app => {
+  //   app.use(
+  //     "/.netlify/functions/",
+  //     createProxyMiddleware({
+  //       target: "http://localhost:9000",
+  //       pathRewrite: {
+  //         "/.netlify/functions/": "",
+  //       },
+  //     })
+  //   )
+  // },
 }

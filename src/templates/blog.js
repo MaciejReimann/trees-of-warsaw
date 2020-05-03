@@ -21,6 +21,8 @@ function Blog(props) {
     html,
   } = props.data.markdownRemark
 
+  console.log(props)
+
   return (
     <div>
       <h2> {title}</h2>
