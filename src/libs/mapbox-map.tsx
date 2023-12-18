@@ -13,8 +13,7 @@ import React from "react";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
-const layerStyle: CircleLayer = {
-  id: "point",
+const layerStyle: Omit<CircleLayer, "id"> = {
   type: "circle",
   paint: {
     "circle-radius": 10,
@@ -47,17 +46,17 @@ export const MapboxMap = ({ children }: MapboxMapProps) => {
 };
 
 type MapboxGeojsonSourceProps = Omit<SourceProps, "type"> & {
+  id: string;
   geojson?: FeatureCollection;
 };
 
 export const MapboxGeojsonSource = ({
   id,
   geojson,
-  children,
 }: MapboxGeojsonSourceProps) => {
   return (
     <Source id={id} type="geojson" data={geojson}>
-      {children}
+      <Layer {...layerStyle} id={id} />
     </Source>
   );
 };
