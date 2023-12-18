@@ -1,83 +1,135 @@
 import * as React from "react";
 import axios from "axios";
-import Map, {
-  Source,
-  Layer,
-  FullscreenControl,
-  GeolocateControl,
-  NavigationControl,
-} from "react-map-gl";
+import { useQuery } from "@tanstack/react-query";
+import { Layer } from "react-map-gl";
 import type { CircleLayer } from "react-map-gl";
 import type { FeatureCollection } from "geojson";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+import { MapboxMap, MapboxGeojsonSource } from "./libs/mapbox-map";
 
 const layerStyle: CircleLayer = {
   id: "point",
   type: "circle",
   paint: {
-    "circle-radius": 2,
+    "circle-radius": 10,
     "circle-color": "red",
   },
 };
 
-export const App = () => {
-  const [data, setData] = React.useState<any>(undefined);
+const layerStyle_2: CircleLayer = {
+  id: "point_2",
+  type: "circle",
+  paint: {
+    "circle-radius": 10,
+    "circle-color": "black",
+  },
+};
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      const baseURL = "http://localhost:8088";
-      const url = `${baseURL}/api/3/action/datastore_search/?resource_id=ed6217dd-c8d0-4f7b-8bed-3b7eb81a95ba`;
+const baseURL = "http://localhost:8088";
+const resourcePath = `/api/3/action/datastore_search/?resource_id=ed6217dd-c8d0-4f7b-8bed-3b7eb81a95ba`;
+const url = `${baseURL}${resourcePath}`;
 
-      const limit = 1000;
-      const urlWithLimit = `${url}&limit=${limit}`;
+const getItemsTotal = async (url: string) => {
+  const limit = 0;
+  const res = await axios({
+    method: "get",
+    url: `${url}&limit=${limit}&fields=_id`,
+  });
 
-      const res = await axios({
-        method: "get",
-        url: urlWithLimit,
-      });
+  const { total } = res.data.result;
+  return total;
+};
 
-      const records = res.data.result.records;
+const getItems = async ({
+  limitPerRequest,
+  offset,
+}: {
+  limitPerRequest: number;
+  offset: number;
+}) => {
+  const urlWithParams = `${url}&limit=${limitPerRequest}&offset=${offset}&sort=x_wgs84,y_wgs84&fields=_id,x_wgs84,y_wgs84`;
 
-      setData(records);
-    };
+  const res = await axios({
+    method: "get",
+    url: urlWithParams,
+  });
 
-    fetchData();
-  }, []);
+  const records = res.data.result.records;
+  return records;
+};
 
-  const geojson = React.useMemo(() => {
-    if (!data) return undefined;
+const calculateQueriesCount = (total: number, limitPerRequest: number) => {
+  if (!total) return 0;
 
-    const geojson = toGeoJSON(data);
-    return geojson;
-  }, [data]);
+  const count = Math.ceil(total / limitPerRequest);
+  return count;
+};
 
-  console.log("data", data);
+const TreesGeojsonSources = () => {
+  const limitPerRequest = 10_000;
+
+  const { data: totalNumberOfItems, isLoading } = useQuery({
+    queryKey: ["getItemsTotal"],
+    queryFn: () => getItemsTotal(url),
+  });
+  // console.log("totalNumberOfItems", totalNumberOfItems);
+
+  const queriesCount = calculateQueriesCount(
+    totalNumberOfItems,
+    limitPerRequest,
+  );
+  // console.log("queriesCount", queriesCount);
+
+  console.log("TreesGeojsonSource");
 
   return (
-    <Map
-      mapLib={import("mapbox-gl")}
-      initialViewState={{
-        longitude: 21,
-        latitude: 52.23,
-        zoom: 10,
-      }}
-      style={{ height: "100vh", width: "100wh" }}
-      mapStyle="mapbox://styles/mapbox/streets-v9"
-      mapboxAccessToken={MAPBOX_TOKEN}
-    >
-      {geojson && (
-        <Source id="my-data" type="geojson" data={geojson}>
-          <Layer {...layerStyle} />
-        </Source>
-      )}
+    <>
+      {new Array(2).fill(null).map((_, index) => {
+        return (
+          <PartialTreesGeojsonSource key={String(index)} batchNumber={index}>
+            <Layer {...layerStyle} />
+          </PartialTreesGeojsonSource>
+        );
+      })}
+    </>
+  );
+};
 
-      <GeolocateControl />
-      <FullscreenControl />
-      <NavigationControl />
-    </Map>
+type PartialTreesGeojsonSourceProps = {
+  batchNumber: number;
+  children: React.ReactNode;
+};
+
+export const PartialTreesGeojsonSource = ({
+  batchNumber,
+  children,
+}: PartialTreesGeojsonSourceProps) => {
+  const limitPerRequest = 10_000;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["getItems", batchNumber],
+    queryFn: () =>
+      getItems({ limitPerRequest, offset: batchNumber * limitPerRequest }),
+  });
+
+  if (!data) return null;
+
+  const geojson = toGeoJSON(data);
+
+  return (
+    <MapboxGeojsonSource id={String(batchNumber)} geojson={geojson}>
+      {children}
+    </MapboxGeojsonSource>
+  );
+};
+
+export const App = () => {
+  return (
+    <MapboxMap>
+      <TreesGeojsonSources />
+    </MapboxMap>
   );
 };
 
@@ -92,4 +144,26 @@ const toGeoJSON = (
       properties: { ...item },
     })),
   };
+};
+
+const geojson_1: FeatureCollection = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [21.094936, 52.235348] },
+      properties: {},
+    },
+  ],
+};
+
+const geojson_2: FeatureCollection = {
+  type: "FeatureCollection",
+  features: [
+    {
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [21.044879, 52.181564] },
+      properties: {},
+    },
+  ],
 };
