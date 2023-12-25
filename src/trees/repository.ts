@@ -34,3 +34,21 @@ export const getItems = async ({
   const records = res.data.result.records;
   return records;
 };
+
+export const getItemById = async ({
+  url = treesURL,
+  id,
+}: {
+  url?: URL;
+  id: string;
+}) => {
+  const urlWithParams = `${url}&filters={"_id":"${id}"}`;
+
+  const res = await axios({
+    method: "get",
+    url: urlWithParams,
+  });
+
+  const records = res.data.result.records;
+  return records;
+};

@@ -1,4 +1,5 @@
-import { MapboxMap, ViewStateProvider } from "./libs/mapbox-map";
+import { MapboxMap } from "./libs/mapbox-map";
+import { ViewStateProvider } from "./libs/mapox-view-state.provider";
 import { TreesGeojsonSources } from "./trees/geojson-sources";
 
 export const App = () => {

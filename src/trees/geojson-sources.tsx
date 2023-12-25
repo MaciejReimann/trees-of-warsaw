@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
 
-import { MapboxGeojsonSource } from "../libs/mapbox-map";
-import { getItems, getItemsTotal } from "./repository";
+import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
+import { getItemsTotal, getItems, getItemById } from "./repository";
 
 const calculateQueriesCount = (total: number, limitPerRequest: number) => {
   if (!total) return 0;
@@ -63,8 +63,30 @@ const PartialTreesGeojsonSource = ({
     <MapboxGeojsonSource
       id={String(batchNumber)}
       geojson={geojson}
+      renderPopupContent={(id) => (
+        <>
+          <TreeDetails id={id} />
+        </>
+      )}
     ></MapboxGeojsonSource>
   );
+};
+
+interface TreeDetailsProps {
+  id: string;
+}
+
+const TreeDetails = ({ id }: TreeDetailsProps) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["getItemById", id],
+    queryFn: () => getItemById({ id }),
+  });
+
+  if (isLoading) return <>Loading...</>;
+
+  const details = JSON.stringify(data, null, 2);
+
+  return <>{details}</>;
 };
 
 const toGeoJSON = (
