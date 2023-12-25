@@ -37,7 +37,7 @@ export const MapboxMap = ({ children }: MapboxMapProps) => {
         mapLib={import("mapbox-gl")}
         id="warsaw-trees-map"
         style={{ height: "100vh", width: "100wh" }}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
+        mapStyle="mapbox://styles/maciejreimann/cjlc8kpy065v32rs0f0e1pctw"
         mapboxAccessToken={MAPBOX_TOKEN}
       >
         {children}
