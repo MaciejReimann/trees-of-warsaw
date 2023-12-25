@@ -1,10 +1,12 @@
-import { MapboxMap } from "./libs/mapbox-map";
+import { MapboxMap, ViewStateProvider } from "./libs/mapbox-map";
 import { TreesGeojsonSources } from "./trees/geojson-sources";
 
 export const App = () => {
   return (
-    <MapboxMap>
-      <TreesGeojsonSources />
-    </MapboxMap>
+    <ViewStateProvider>
+      <MapboxMap>
+        <TreesGeojsonSources />
+      </MapboxMap>
+    </ViewStateProvider>
   );
 };

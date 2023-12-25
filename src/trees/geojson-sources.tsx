@@ -12,7 +12,7 @@ const calculateQueriesCount = (total: number, limitPerRequest: number) => {
 };
 
 export const TreesGeojsonSources = () => {
-  const limitPerRequest = 10_000;
+  const limitPerRequest = 20_000;
 
   const { data: totalNumberOfItems, isLoading } = useQuery({
     queryKey: ["getItemsTotal"],
