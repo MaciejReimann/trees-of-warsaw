@@ -2,74 +2,43 @@ import type { FeatureCollection } from "geojson";
 
 import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
 import {
-  useTreesCount,
+  useTreesTotal,
   useTrees,
   useTreeById,
   useTreeSpecies,
 } from "./use.trees";
 
-const calculateQueriesCount = (total: number, limitPerRequest: number) => {
-  if (!total) return 0;
-
-  const count = Math.ceil(total / limitPerRequest);
-  return count;
+type TreesGeojsonSourcesProps = {
+  limitPerRequest?: number;
 };
 
-export const TreesGeojsonSources = () => {
-  const limitPerRequest = 20_000;
-
-  const { data: totalNumberOfItems, isLoading } = useTreesCount();
-
-  const queriesCount = calculateQueriesCount(
-    totalNumberOfItems,
+export const TreesGeojsonSources = ({
+  limitPerRequest = 20_000,
+}: TreesGeojsonSourcesProps) => {
+  const { data: totalNumberOfTrees } = useTreesTotal();
+  const results = useTrees({
     limitPerRequest,
-  );
-
-  return (
-    <>
-      {new Array(queriesCount).fill(null).map((_, index) => {
-        return (
-          <PartialTreesGeojsonSource
-            key={String(index)}
-            batchNumber={index}
-            limitPerRequest={limitPerRequest}
-          />
-        );
-      })}
-    </>
-  );
-};
-
-type PartialTreesGeojsonSourceProps = {
-  batchNumber: number;
-  limitPerRequest: number;
-  children?: React.ReactNode;
-};
-
-const PartialTreesGeojsonSource = ({
-  batchNumber,
-  limitPerRequest,
-}: PartialTreesGeojsonSourceProps) => {
-  const { data, isLoading } = useTrees({
-    limitPerRequest,
-    batchNumber,
+    total: totalNumberOfTrees,
   });
 
-  if (!data) return null;
+  return results.map((result, index) => {
+    if (!result.data) return null;
 
-  const geojson = toGeoJSON(data);
+    const geojson = toGeoJSON(result.data);
 
-  return (
-    <MapboxGeojsonSource
-      id={String(batchNumber)}
-      geojson={geojson}
-      renderPopupContent={(id) => (
-        <>
-          <TreeDetails id={id} />
-        </>
-      )}
-    ></MapboxGeojsonSource>
-  );
+    return (
+      <MapboxGeojsonSource
+        key={String(index)}
+        id={String(index)}
+        geojson={geojson}
+        renderPopupContent={(id) => (
+          <>
+            <TreeDetails id={id} />
+          </>
+        )}
+      />
+    );
+  });
 };
 
 interface TreeDetailsProps {
@@ -102,19 +71,21 @@ const toGeoJSON = (
 export const FiltersPanel = () => {
   const limitPerRequest = 20_000;
 
-  const { data: treesCount } = useTreesCount();
+  const { data: totalNumberOfTrees } = useTreesTotal();
 
-  const { data, isLoading } = useTreeSpecies({
+  const queriesResults = useTreeSpecies({
     limitPerRequest,
-    batchNumber: 0,
+    total: totalNumberOfTrees,
   });
-
-  console.log("species", data);
 
   return (
     <div style={{ position: "absolute", top: 100 }}>
       Filter by species
-      <>{data}</>
+      <>
+        {queriesResults.map((result, index) => {
+          return <div key={index}>{result.data}</div>;
+        })}
+      </>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueries } from "@tanstack/react-query";
 
 type Tree = any;
 
-export const useTreesCount = () => {
+export const useTreesTotal = () => {
   const result = useQuery({
     queryKey: ["getTreesTotal"],
     queryFn: () => getTreesTotal(),
@@ -14,12 +14,12 @@ export const useTreesCount = () => {
 
 export const useTrees = ({
   limitPerRequest,
-  batchNumber,
+  total,
 }: {
   limitPerRequest: number;
-  batchNumber: number;
+  total: number;
 }) => {
-  const result = useTreesQuery({ limitPerRequest, batchNumber });
+  const result = useTreesQueries({ limitPerRequest, total });
 
   return result;
 };
@@ -41,34 +41,48 @@ const filterSpecies = (trees: { gatunek: string }[]) => {
 
 export const useTreeSpecies = ({
   limitPerRequest,
-  batchNumber,
+  total,
 }: {
   limitPerRequest: number;
-  batchNumber: number;
+  total: number;
 }) => {
-  const result = useTreesQuery({ limitPerRequest, batchNumber }, filterSpecies);
+  const results = useTreesQueries({ limitPerRequest, total }, filterSpecies);
 
-  return result;
+  return results;
 };
 
-const useTreesQuery = <TData = Tree>(
+const calculateQueriesCount = (total: number, limitPerRequest: number) => {
+  if (!total) return 0;
+
+  const count = Math.ceil(total / limitPerRequest);
+  return count;
+};
+
+const useTreesQueries = <TData = Tree>(
   {
     limitPerRequest,
-    batchNumber,
+    total,
   }: {
     limitPerRequest: number;
-    batchNumber: number;
+    total: number;
   },
   select?: (data: Tree) => TData,
 ) => {
-  const offset = batchNumber * limitPerRequest;
-  const result = useQuery({
-    queryKey: ["getTrees", offset],
-    queryFn: () => getTrees({ limitPerRequest, offset }),
-    select,
+  const queriesCount = calculateQueriesCount(total, limitPerRequest);
+
+  const results = useQueries({
+    queries: new Array(queriesCount).fill(null).map((_, index) => ({
+      queryKey: ["getTrees", index],
+      queryFn: () =>
+        getTrees({
+          limitPerRequest,
+          offset: index * limitPerRequest,
+        }),
+      select,
+    })),
   });
 
-  return result;
+  return results;
 };
 
 const baseURL = "http://localhost:8088";
