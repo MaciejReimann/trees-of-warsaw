@@ -1,9 +1,7 @@
-import type { FeatureCollection } from "geojson";
-
 import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
 import {
   useTreesTotal,
-  useTrees,
+  useTreesGeoJSON,
   useTreeById,
   useTreeSpecies,
 } from "./use.trees";
@@ -16,7 +14,8 @@ export const TreesGeojsonSources = ({
   limitPerRequest = 20_000,
 }: TreesGeojsonSourcesProps) => {
   const { data: totalNumberOfTrees } = useTreesTotal();
-  const results = useTrees({
+
+  const results = useTreesGeoJSON({
     limitPerRequest,
     total: totalNumberOfTrees,
   });
@@ -24,13 +23,11 @@ export const TreesGeojsonSources = ({
   return results.map((result, index) => {
     if (!result.data) return null;
 
-    const geojson = toGeoJSON(result.data);
-
     return (
       <MapboxGeojsonSource
         key={String(index)}
         id={String(index)}
-        geojson={geojson}
+        geojson={result.data}
         renderPopupContent={(id) => (
           <>
             <TreeDetails id={id} />
@@ -53,19 +50,6 @@ const TreeDetails = ({ id }: TreeDetailsProps) => {
   const details = JSON.stringify(data, null, 2);
 
   return <>{details}</>;
-};
-
-const toGeoJSON = (
-  items: { x_wgs84: number; y_wgs84: number }[],
-): FeatureCollection => {
-  return {
-    type: "FeatureCollection",
-    features: items.map((item) => ({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [item.x_wgs84, item.y_wgs84] },
-      properties: { ...item },
-    })),
-  };
 };
 
 export const FiltersPanel = () => {

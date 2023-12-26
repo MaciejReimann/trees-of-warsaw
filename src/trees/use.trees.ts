@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useQuery, useQueries } from "@tanstack/react-query";
+import type { FeatureCollection } from "geojson";
 
 type Tree = any;
 
@@ -12,14 +13,27 @@ export const useTreesTotal = () => {
   return result;
 };
 
-export const useTrees = ({
+const toGeoJSON = (
+  items: { x_wgs84: number; y_wgs84: number }[],
+): FeatureCollection => {
+  return {
+    type: "FeatureCollection",
+    features: items.map((item) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [item.x_wgs84, item.y_wgs84] },
+      properties: { ...item },
+    })),
+  };
+};
+
+export const useTreesGeoJSON = ({
   limitPerRequest,
   total,
 }: {
   limitPerRequest: number;
   total: number;
 }) => {
-  const result = useTreesQueries({ limitPerRequest, total });
+  const result = useTreesQueries({ limitPerRequest, total }, toGeoJSON);
 
   return result;
 };
