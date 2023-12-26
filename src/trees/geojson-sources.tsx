@@ -1,8 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
 
 import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
-import { getItemsTotal, getItems, getItemById } from "./repository";
+import {
+  useTreesCount,
+  useTrees,
+  useTreeById,
+  useTreeSpecies,
+} from "./use.trees";
 
 const calculateQueriesCount = (total: number, limitPerRequest: number) => {
   if (!total) return 0;
@@ -14,10 +18,7 @@ const calculateQueriesCount = (total: number, limitPerRequest: number) => {
 export const TreesGeojsonSources = () => {
   const limitPerRequest = 20_000;
 
-  const { data: totalNumberOfItems, isLoading } = useQuery({
-    queryKey: ["getItemsTotal"],
-    queryFn: () => getItemsTotal(),
-  });
+  const { data: totalNumberOfItems, isLoading } = useTreesCount();
 
   const queriesCount = calculateQueriesCount(
     totalNumberOfItems,
@@ -32,7 +33,7 @@ export const TreesGeojsonSources = () => {
             key={String(index)}
             batchNumber={index}
             limitPerRequest={limitPerRequest}
-          ></PartialTreesGeojsonSource>
+          />
         );
       })}
     </>
@@ -49,10 +50,9 @@ const PartialTreesGeojsonSource = ({
   batchNumber,
   limitPerRequest,
 }: PartialTreesGeojsonSourceProps) => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["getItems", batchNumber],
-    queryFn: () =>
-      getItems({ limitPerRequest, offset: batchNumber * limitPerRequest }),
+  const { data, isLoading } = useTrees({
+    limitPerRequest,
+    batchNumber,
   });
 
   if (!data) return null;
@@ -77,10 +77,7 @@ interface TreeDetailsProps {
 }
 
 const TreeDetails = ({ id }: TreeDetailsProps) => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["getItemById", id],
-    queryFn: () => getItemById({ id }),
-  });
+  const { data, isLoading } = useTreeById({ id });
 
   if (isLoading) return <>Loading...</>;
 
@@ -100,4 +97,24 @@ const toGeoJSON = (
       properties: { ...item },
     })),
   };
+};
+
+export const FiltersPanel = () => {
+  const limitPerRequest = 20_000;
+
+  const { data: treesCount } = useTreesCount();
+
+  const { data, isLoading } = useTreeSpecies({
+    limitPerRequest,
+    batchNumber: 0,
+  });
+
+  console.log("species", data);
+
+  return (
+    <div style={{ position: "absolute", top: 100 }}>
+      Filter by species
+      <>{data}</>
+    </div>
+  );
 };

@@ -1,6 +1,6 @@
 import { MapboxMap } from "./libs/mapbox-map";
 import { ViewStateProvider } from "./libs/mapox-view-state.provider";
-import { TreesGeojsonSources } from "./trees/geojson-sources";
+import { TreesGeojsonSources, FiltersPanel } from "./trees/geojson-sources";
 
 export const App = () => {
   return (
@@ -8,6 +8,8 @@ export const App = () => {
       <MapboxMap>
         <TreesGeojsonSources />
       </MapboxMap>
+
+      <FiltersPanel></FiltersPanel>
     </ViewStateProvider>
   );
 };
