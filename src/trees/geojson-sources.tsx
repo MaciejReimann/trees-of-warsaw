@@ -43,7 +43,7 @@ interface TreeDetailsProps {
 }
 
 const TreeDetails = ({ id }: TreeDetailsProps) => {
-  const { data, isLoading } = useTreeById({ id });
+  const { data, isLoading } = useTreeById(id);
 
   if (isLoading) return <>Loading...</>;
 
