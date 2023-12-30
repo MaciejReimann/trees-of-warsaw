@@ -65,7 +65,7 @@ export class TreesApiClient extends ApiClient {
         fields: z.array(z.object({ type: z.string(), id: z.string() })),
         records_format: z.string().optional(),
         q: z.string().optional(),
-        records: z.array(this.getRecordSchema()),
+        records: z.array(recordSchema),
         limit: z.number(),
         offset: z.number().optional(),
         _links: z.object({
@@ -77,29 +77,29 @@ export class TreesApiClient extends ApiClient {
       }),
     });
   };
-
-  private getRecordSchema = () => {
-    return z.object({
-      _id: z.number(),
-      x_wgs84: z.number().optional(),
-      y_wgs84: z.number().optional(),
-      x_pl2000: z.number().optional(),
-      y_pl2000: z.number().optional(),
-      numer_inw: z.string().optional(),
-      dzielnica: z.string().optional(),
-      jednostka: z.string().optional(),
-      miasto: z.string().optional(),
-      adres: z.string().optional(),
-      numer_adres: z.string().optional(),
-      lokalizacja: z.string().optional(),
-      gatunek: z.string().optional(),
-      gatunek_1: z.string().optional(),
-      data_wyk_pom: z.number().optional(),
-      wiek_w_dni: z.number().optional(),
-      wysokosc: z.string().optional(),
-      pnie_obwod: z.string().optional(),
-      srednica_k: z.string().optional(),
-      stan_zdrowia: z.string().optional(),
-    });
-  };
 }
+
+const recordSchema = z.object({
+  _id: z.number(),
+  x_wgs84: z.number(),
+  y_wgs84: z.number(),
+  x_pl2000: z.number().optional(),
+  y_pl2000: z.number().optional(),
+  numer_inw: z.string().optional(),
+  dzielnica: z.string().optional(),
+  jednostka: z.string().optional(),
+  miasto: z.string().optional(),
+  adres: z.string().optional(),
+  numer_adres: z.string().optional(),
+  lokalizacja: z.string().optional(),
+  gatunek: z.string().optional(),
+  gatunek_1: z.string().optional(),
+  data_wyk_pom: z.number().optional(),
+  wiek_w_dni: z.number().optional(),
+  wysokosc: z.string().optional(),
+  pnie_obwod: z.string().optional(),
+  srednica_k: z.string().optional(),
+  stan_zdrowia: z.string().optional(),
+});
+
+export type TreeRecord = z.infer<typeof recordSchema>;

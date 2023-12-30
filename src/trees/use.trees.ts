@@ -1,9 +1,8 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
+import { groupBy } from "lodash";
 
-import { TreesApiClient } from "./api-client";
-
-type Tree = any;
+import { TreesApiClient, TreeRecord } from "./api-client";
 
 const apiClient = new TreesApiClient();
 
@@ -50,12 +49,37 @@ export const useTreeById = (id: string) => {
   return result;
 };
 
-const filterSpecies = (trees: { gatunek: string }[]) => {
-  const species = trees.map((tree) => tree.gatunek);
+class Species {
+  constructor(public name: string, public trees: { id: number }[]) {}
+}
 
-  return species;
+class Genus {
+  constructor(public name: string, public species: Species[]) {}
+}
 
-  return Array.from(new Set(species));
+// assuming the records are sorted by species name
+const createGenera = (trees: TreeRecord[]) => {
+  const groupedByGenera = groupBy(trees, (tree) => tree.gatunek?.split(" ")[0]);
+
+  return Object.entries(groupedByGenera).reduce((acc, [genusName, trees]) => {
+    const groupedBySpecies = groupBy(trees, (tree) => tree.gatunek);
+
+    const species = Object.entries(groupedBySpecies).reduce(
+      (acc, [speciesName, trees]) => {
+        const IDs = trees.map((tree) => ({ id: tree._id }));
+        const species = new Species(speciesName, IDs);
+
+        return [...acc, species];
+      },
+      [] as Species[],
+    );
+
+    const genus = new Genus(genusName, species);
+
+    if (!genus) return acc;
+
+    return [...acc, genus];
+  }, [] as Genus[]);
 };
 
 export const useTreeSpecies = ({
@@ -65,7 +89,7 @@ export const useTreeSpecies = ({
   limitPerRequest: number;
   total: number;
 }) => {
-  const results = useTreesQueries({ limitPerRequest, total }, filterSpecies);
+  const results = useTreesQueries({ limitPerRequest, total }, createGenera);
 
   return results;
 };
@@ -77,7 +101,7 @@ const calculateQueriesCount = (total: number, limitPerRequest: number) => {
   return count;
 };
 
-const useTreesQueries = <TData = Tree>(
+const useTreesQueries = <TData = TreeRecord[]>(
   {
     limitPerRequest,
     total,
@@ -85,7 +109,7 @@ const useTreesQueries = <TData = Tree>(
     limitPerRequest: number;
     total: number;
   },
-  select?: (data: Tree) => TData,
+  select?: (data: TreeRecord[]) => TData,
 ) => {
   const queriesCount = calculateQueriesCount(total, limitPerRequest);
 
