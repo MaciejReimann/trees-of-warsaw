@@ -1,10 +1,5 @@
 import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
-import {
-  useTreesTotal,
-  useTreesGeoJSON,
-  useTreeById,
-  useTreeSpecies,
-} from "./use.trees";
+import { useTreesTotal, useTreesGeoJSON, useTreeById } from "./use.trees";
 
 type TreesGeojsonSourcesProps = {
   limitPerRequest?: number;
@@ -50,26 +45,4 @@ const TreeDetails = ({ id }: TreeDetailsProps) => {
   const details = JSON.stringify(data, null, 2);
 
   return <>{details}</>;
-};
-
-export const FiltersPanel = () => {
-  const limitPerRequest = 10_000;
-
-  const { data: totalNumberOfTrees } = useTreesTotal();
-
-  const queriesResults = useTreeSpecies({
-    limitPerRequest,
-    total: totalNumberOfTrees ?? 0,
-  });
-
-  return (
-    <div style={{ position: "absolute", top: 100 }}>
-      Filter by species
-      <>
-        {queriesResults.map((result, index) => {
-          return <div key={index}>{result.data}</div>;
-        })}
-      </>
-    </div>
-  );
 };

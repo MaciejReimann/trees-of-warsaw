@@ -1,15 +1,22 @@
+import { HStack, Box } from "@chakra-ui/react";
 import { MapboxMap } from "./libs/mapbox-map";
 import { ViewStateProvider } from "./libs/mapox-view-state.provider";
-import { TreesGeojsonSources, FiltersPanel } from "./trees/geojson-sources";
+import { TreesGeojsonSources } from "./trees/geojson-sources";
+import { SpeciesPanel } from "./trees/species.panel";
 
 export const App = () => {
   return (
     <ViewStateProvider>
-      <MapboxMap>
-        <TreesGeojsonSources />
-      </MapboxMap>
+      <HStack spacing={1} position={"absolute"}>
+        <SpeciesPanel w="20vw" />
 
-      <FiltersPanel></FiltersPanel>
+        <Box>
+          "Hello World"
+          {/* <MapboxMap>
+          <TreesGeojsonSources />
+        </MapboxMap> */}
+        </Box>
+      </HStack>
     </ViewStateProvider>
   );
 };

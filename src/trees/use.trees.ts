@@ -53,6 +53,8 @@ export const useTreeById = (id: string) => {
 const filterSpecies = (trees: { gatunek: string }[]) => {
   const species = trees.map((tree) => tree.gatunek);
 
+  return species;
+
   return Array.from(new Set(species));
 };
 

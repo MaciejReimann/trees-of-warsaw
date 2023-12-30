@@ -1,14 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { App } from "./app";
 
-const queryClient = new QueryClient();
+import { ChakraUIProvider } from "./libs/chakra-ui/chakra-ui.provider";
+import { QueryClientProvider } from "./libs/react-query/query-client.provider";
+import { App } from "./app";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
+    <ChakraUIProvider>
+      <QueryClientProvider>
+        <App />
+      </QueryClientProvider>
+    </ChakraUIProvider>
   </React.StrictMode>,
 );
