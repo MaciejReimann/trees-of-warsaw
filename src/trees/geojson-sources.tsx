@@ -17,11 +17,11 @@ export const TreesGeojsonSources = ({
 
   const results = useTreesGeoJSON({
     limitPerRequest,
-    total: totalNumberOfTrees,
+    total: totalNumberOfTrees ?? 0,
   });
 
   return results.map((result, index) => {
-    if (!result.data) return null;
+    if (!result.isSuccess) return null;
 
     return (
       <MapboxGeojsonSource
@@ -53,13 +53,13 @@ const TreeDetails = ({ id }: TreeDetailsProps) => {
 };
 
 export const FiltersPanel = () => {
-  const limitPerRequest = 20_000;
+  const limitPerRequest = 10_000;
 
   const { data: totalNumberOfTrees } = useTreesTotal();
 
   const queriesResults = useTreeSpecies({
     limitPerRequest,
-    total: totalNumberOfTrees,
+    total: totalNumberOfTrees ?? 0,
   });
 
   return (
