@@ -1,6 +1,6 @@
 import { HStack, Box } from "@chakra-ui/react";
-import { MapboxMap } from "./libs/mapbox-map";
-import { ViewStateProvider } from "./libs/mapox-view-state.provider";
+import { MapboxMap } from "./libs/mapbox/mapbox-map";
+import { ViewStateProvider } from "./libs/mapbox/mapox-view-state.provider";
 import { TreesGeojsonSources } from "./trees/geojson-sources";
 import { SpeciesPanel } from "./trees/species.panel";
 

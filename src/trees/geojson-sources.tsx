@@ -1,4 +1,4 @@
-import { MapboxGeojsonSource } from "../libs/mapbox-geojson-source";
+import { MapboxGeojsonSource } from "../libs/mapbox/mapbox-geojson-source";
 import { useTreesTotal, useTreesGeoJSON, useTreeById } from "./use.trees";
 
 type TreesGeojsonSourcesProps = {
