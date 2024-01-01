@@ -48,12 +48,13 @@ export const MapboxGeojsonSource = ({
   return (
     <Source id={id} type="geojson" data={geojson}>
       <Layer
+        id={id}
         type="circle"
         paint={{
           "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 10],
           "circle-color": ["get", "color"],
         }}
-        id={id}
+        filter={["==", "gatunek_1", "Acer negundo"]}
       />
 
       {popupCoordinates && (

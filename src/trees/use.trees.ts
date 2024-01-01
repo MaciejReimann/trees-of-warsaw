@@ -49,6 +49,8 @@ export const useTreeById = (id: string) => {
 };
 
 class Species {
+  // sp. singular unknown species from a known genus
+  // https://en.wikipedia.org/wiki/Binomial_nomenclature
   constructor(public name: string, public trees: { id: number }[]) {}
 }
 

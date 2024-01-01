@@ -1,13 +1,14 @@
 import * as React from "react";
 import {
   Heading,
-  StackDivider,
   Stack,
   Box,
   BoxProps,
   Text,
   Checkbox,
 } from "@chakra-ui/react";
+import { useSearch, useNavigate } from "@tanstack/react-router";
+import { rootRoute } from "../router";
 
 import { useTreesTotal, useTreeSpecies } from "./use.trees";
 
@@ -24,6 +25,12 @@ export const SpeciesPanel = ({ ...props }: SpeciesPanelProps) => {
     total: totalNumberOfTrees ?? 0,
   });
 
+  const searchParams = useSearch({
+    from: rootRoute.id,
+  });
+
+  console.log("searchParams", searchParams);
+
   return (
     <Box p={5} shadow="md" borderWidth="1px" {...props}>
       <Heading fontSize="xl">Species</Heading>
@@ -34,7 +41,7 @@ export const SpeciesPanel = ({ ...props }: SpeciesPanelProps) => {
           //     return <Text mt={4}>Loading...</Text>;
           //   }
           //   if (result.isError) {
-          //     return <Text mt={4}>Error</Text>;
+          //     return <Text mt={4}>Error</Text>;f
           //   }
           if (!result.data) {
             return (
@@ -46,7 +53,7 @@ export const SpeciesPanel = ({ ...props }: SpeciesPanelProps) => {
           const genera = result.data;
           const key = JSON.stringify(genera[0]);
 
-          console.log(result.data);
+          // console.log(result.data);
 
           return (
             <Stack spacing={[1, 5]} direction={["column"]} key={key}>
@@ -73,12 +80,30 @@ type CheckBoxesProps = {
 };
 
 const CheckBoxes = ({ parentValue, childValues }: CheckBoxesProps) => {
-  const defaultChecked = childValues.map((value) => false);
+  const defaultChecked = childValues.map((value) => true);
 
   const [checkedItems, setCheckedItems] = React.useState(defaultChecked);
 
   const allChecked = checkedItems.every(Boolean);
   const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
+
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (allChecked) {
+      return;
+    }
+
+    const speciesToFilterOut = childValues.filter(
+      (_, index) => !checkedItems[index],
+    );
+
+    navigate({
+      search: {
+        filter: speciesToFilterOut,
+      },
+    });
+  }, [checkedItems, childValues]);
 
   return (
     <>
@@ -93,6 +118,7 @@ const CheckBoxes = ({ parentValue, childValues }: CheckBoxesProps) => {
       >
         {parentValue}
       </Checkbox>
+
       <Stack pl={6} mt={1} spacing={1}>
         {childValues.map((item, index) => {
           const isChecked = checkedItems[index];
@@ -100,13 +126,13 @@ const CheckBoxes = ({ parentValue, childValues }: CheckBoxesProps) => {
             <Checkbox
               key={item + index}
               isChecked={isChecked}
-              onChange={(e) =>
+              onChange={(e) => {
                 setCheckedItems((checkedItems) => {
                   const newCheckedItems = [...checkedItems];
                   newCheckedItems[index] = e.target.checked;
                   return newCheckedItems;
-                })
-              }
+                });
+              }}
             >
               <Text mt={4}>{item}</Text>
             </Checkbox>

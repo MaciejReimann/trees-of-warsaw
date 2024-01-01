@@ -4,7 +4,11 @@ import { ViewStateProvider } from "./libs/mapbox/mapox-view-state.provider";
 import { TreesGeojsonSources } from "./trees/geojson-sources";
 import { SpeciesPanel } from "./trees/species.panel";
 
-export const App = () => {
+type AppProps = {
+  children?: React.ReactNode;
+};
+
+export const App = ({ children }: AppProps) => {
   return (
     <ViewStateProvider>
       <HStack spacing={1} height={"100vh"}>
@@ -16,6 +20,7 @@ export const App = () => {
           </MapboxMap>
         </Box>
       </HStack>
+      {children}
     </ViewStateProvider>
   );
 };
