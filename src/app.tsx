@@ -7,14 +7,13 @@ import { SpeciesPanel } from "./trees/species.panel";
 export const App = () => {
   return (
     <ViewStateProvider>
-      <HStack spacing={1} position={"absolute"}>
-        <SpeciesPanel w="20vw" />
+      <HStack spacing={1} height={"100vh"}>
+        <SpeciesPanel w="25vw" overflowY="auto" maxHeight="100vh" />
 
-        <Box>
-          "Hello World"
-          {/* <MapboxMap>
-          <TreesGeojsonSources />
-        </MapboxMap> */}
+        <Box width="100vw" height="100vh">
+          <MapboxMap>
+            <TreesGeojsonSources />
+          </MapboxMap>
         </Box>
       </HStack>
     </ViewStateProvider>
