@@ -1,18 +1,9 @@
 import * as React from "react";
 import { Source, SourceProps, Layer, useMap, Popup } from "react-map-gl";
-import type { CircleLayer } from "react-map-gl";
 import type { FeatureCollection } from "geojson";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import { useViewState } from "./mapox-view-state.provider";
-
-const layerStyle: Omit<CircleLayer, "id"> = {
-  type: "circle",
-  paint: {
-    "circle-radius": 1,
-    "circle-color": "blue",
-  },
-};
 
 type MapboxGeojsonSourceProps = Omit<SourceProps, "type"> & {
   id: string;
@@ -57,9 +48,9 @@ export const MapboxGeojsonSource = ({
   return (
     <Source id={id} type="geojson" data={geojson}>
       <Layer
-        {...layerStyle}
+        type="circle"
         paint={{
-          "circle-radius": getCircleRadius(viewState.zoom),
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 1, 20, 10],
           "circle-color": ["get", "color"],
         }}
         id={id}
@@ -78,13 +69,4 @@ export const MapboxGeojsonSource = ({
       )}
     </Source>
   );
-};
-
-const getCircleRadius = (zoom: number) => {
-  if (zoom < 12) return 1;
-  if (zoom < 14) return 2;
-  if (zoom < 16) return 4;
-  if (zoom < 18) return 8;
-  if (zoom < 20) return 16;
-  return 32;
 };
