@@ -10,7 +10,7 @@ const layerStyle: Omit<CircleLayer, "id"> = {
   type: "circle",
   paint: {
     "circle-radius": 1,
-    "circle-color": "red",
+    "circle-color": "blue",
   },
 };
 
@@ -58,7 +58,10 @@ export const MapboxGeojsonSource = ({
     <Source id={id} type="geojson" data={geojson}>
       <Layer
         {...layerStyle}
-        paint={{ "circle-radius": getCircleRadius(viewState.zoom) }}
+        paint={{
+          "circle-radius": getCircleRadius(viewState.zoom),
+          "circle-color": ["get", "color"],
+        }}
         id={id}
       />
 

@@ -3,6 +3,7 @@ import type { FeatureCollection } from "geojson";
 import { groupBy } from "lodash";
 
 import { TreesApiClient, TreeRecord } from "./api-client";
+import { stringToColorCode } from "./utils";
 
 const apiClient = new TreesApiClient();
 
@@ -15,15 +16,13 @@ export const useTreesTotal = () => {
   return result;
 };
 
-const toGeoJSON = (
-  items: { x_wgs84: number; y_wgs84: number }[],
-): FeatureCollection => {
+const toGeoJSON = (items: TreeRecord[]): FeatureCollection => {
   return {
     type: "FeatureCollection",
     features: items.map((item) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: [item.x_wgs84, item.y_wgs84] },
-      properties: { ...item },
+      properties: { ...item, color: stringToColorCode(item.gatunek ?? "") },
     })),
   };
 };

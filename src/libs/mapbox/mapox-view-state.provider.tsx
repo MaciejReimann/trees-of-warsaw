@@ -17,7 +17,7 @@ export const ViewStateProvider = ({
   const [viewState, setViewState] = React.useState({
     longitude: 21,
     latitude: 52.23,
-    zoom: 10,
+    zoom: 14,
     bearing: 0,
     pitch: 0,
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
