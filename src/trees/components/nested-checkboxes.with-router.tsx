@@ -19,11 +19,13 @@ export const NestedCheckboxesWithRouter = ({
             (_, index) => !checkedItems[index],
           );
 
-          navigate({
-            search: {
-              filter: speciesToFilterOut,
-            },
-          });
+          if (speciesToFilterOut.length > 0) {
+            navigate({
+              search: {
+                filter: speciesToFilterOut,
+              },
+            });
+          }
         }, [checkedItems, childValues]);
       }}
     />
