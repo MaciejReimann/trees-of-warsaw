@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Heading,
   Stack,
@@ -10,6 +9,7 @@ import {
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { rootRoute } from "../router";
 
+import { NestedCheckboxesWithRouter } from "./components/nested-checkboxes.with-router";
 import { useTreesTotal, useTreeSpecies } from "./use.trees";
 
 type SpeciesPanelProps = {} & BoxProps;
@@ -59,7 +59,7 @@ export const SpeciesPanel = ({ ...props }: SpeciesPanelProps) => {
             <Stack spacing={[1, 5]} direction={["column"]} key={key}>
               {genera.map((genus) => {
                 return (
-                  <CheckBoxes
+                  <NestedCheckboxesWithRouter
                     key={genus.name + index}
                     parentValue={genus.name}
                     childValues={genus.species.map((species) => species.name)}
@@ -71,74 +71,5 @@ export const SpeciesPanel = ({ ...props }: SpeciesPanelProps) => {
         })}
       </>
     </Box>
-  );
-};
-
-type CheckBoxesProps = {
-  parentValue: string;
-  childValues: string[];
-};
-
-const CheckBoxes = ({ parentValue, childValues }: CheckBoxesProps) => {
-  const defaultChecked = childValues.map((value) => true);
-
-  const [checkedItems, setCheckedItems] = React.useState(defaultChecked);
-
-  const allChecked = checkedItems.every(Boolean);
-  const isIndeterminate = checkedItems.some(Boolean) && !allChecked;
-
-  const navigate = useNavigate();
-
-  React.useEffect(() => {
-    if (allChecked) {
-      return;
-    }
-
-    const speciesToFilterOut = childValues.filter(
-      (_, index) => !checkedItems[index],
-    );
-
-    navigate({
-      search: {
-        filter: speciesToFilterOut,
-      },
-    });
-  }, [checkedItems, childValues]);
-
-  return (
-    <>
-      <Checkbox
-        isChecked={allChecked}
-        isIndeterminate={isIndeterminate}
-        onChange={(e) =>
-          setCheckedItems((checkedItems) =>
-            checkedItems.map(() => e.target.checked),
-          )
-        }
-      >
-        {parentValue}
-      </Checkbox>
-
-      <Stack pl={6} mt={1} spacing={1}>
-        {childValues.map((item, index) => {
-          const isChecked = checkedItems[index];
-          return (
-            <Checkbox
-              key={item + index}
-              isChecked={isChecked}
-              onChange={(e) => {
-                setCheckedItems((checkedItems) => {
-                  const newCheckedItems = [...checkedItems];
-                  newCheckedItems[index] = e.target.checked;
-                  return newCheckedItems;
-                });
-              }}
-            >
-              <Text mt={4}>{item}</Text>
-            </Checkbox>
-          );
-        })}
-      </Stack>
-    </>
   );
 };
